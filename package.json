@@ -33,7 +33,7 @@
     "tap": "^11.0.0"
   },
   "dependencies": {
-    "@matteo.collina/assets-pg": "^3.0.0",
+    "@matteo.collina/assets-pg": "^4.0.0",
     "fastify": "^0.35.3",
     "minimist": "^1.1.1",
     "pino-colada": "^1.4.2"

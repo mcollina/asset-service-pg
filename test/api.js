@@ -73,3 +73,67 @@ test('GET an asset', function (t) {
     })
   })
 })
+
+test('POST an asset - missing name', function (t) {
+  const asset = {
+    status: 'wait'
+  }
+  server.inject({
+    method: 'POST',
+    url: '/',
+    payload: asset
+  }, function (response) {
+    t.equal(response.statusCode, 422)
+    t.end()
+  })
+})
+
+test('GET / is a 404', function (t) {
+  server.inject({
+    method: 'GET',
+    url: `/`
+  }, function (response) {
+    t.equal(response.statusCode, 404)
+    t.end()
+  })
+})
+
+test('GET /abc is a 400', function (t) {
+  server.inject({
+    method: 'GET',
+    url: `/abc`
+  }, function (response) {
+    t.equal(response.statusCode, 404)
+    t.end()
+  })
+})
+
+test('PUT an asset', function (t) {
+  const asset = {
+    name: 'my long asset',
+    status: 'wait'
+  }
+  server.inject({
+    method: 'POST',
+    url: '/',
+    payload: asset
+  }, function (response) {
+    t.equal(response.statusCode, 201)
+    t.ok(response.headers['location'])
+    // the ID matches the one in the locaiton header
+    const id = Number(response.headers['location'].slice(1))
+    const url = '/' + id
+
+    asset.status = 'operational'
+    server.inject({
+      method: 'PUT',
+      url,
+      payload: asset
+    }, function (response) {
+      t.equal(response.statusCode, 200)
+      asset.id = id
+      t.deepEqual(JSON.parse(response.payload), asset)
+      t.end()
+    })
+  })
+})
