@@ -6,7 +6,8 @@
   "scripts": {
     "lint": "standard",
     "test": "tap test/*.js",
-    "cov": "tap --cov test/*.js"
+    "cov": "tap --cov test/*.js",
+    "start": "node assets -v | pino-colada"
   },
   "precommit": [
     "lint",
@@ -34,6 +35,7 @@
   "dependencies": {
     "@matteo.collina/assets-pg": "^3.0.0",
     "fastify": "^0.35.3",
-    "minimist": "^1.1.1"
+    "minimist": "^1.1.1",
+    "pino-colada": "^1.4.2"
   }
 }
