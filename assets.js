@@ -1,37 +1,28 @@
 'use strict'
 
-var Hapi = require('hapi')
-var xtend = require('xtend')
-var minimist = require('minimist')
-var defaults = {
-  port: 8989
-}
-
-function assetsService (opts, cb) {
-  opts = xtend(defaults, opts)
-
-  var server = new Hapi.Server()
-
-  server.connection({ port: opts.port })
-
-  server.register(require('./lib/assets'), (err) => {
-    cb(err, server)
-  })
-
-  return server
-}
+const Fastify = require('fastify')
+const minimist = require('minimist')
+const service = require('./lib/assets')
 
 function start (opts) {
-  assetsService(opts, (err, server) => {
-    if (err) { throw err }
-    server.start((err) => {
-      if (err) { throw err }
-      console.log('Server running at:', server.info.uri)
-    })
+  opts = opts || {}
+
+  if (opts.verbose) {
+    opts.logger = {
+      level: 'info'
+    }
+  }
+
+  const server = Fastify(opts)
+  server.register(service, opts)
+  server.listen(opts.port, (err) => {
+    if (err) {
+      throw err
+    }
   })
 }
 
-module.exports = assetsService
+module.exports = service
 
 if (require.main === module) {
   start(minimist(process.argv.slice(2), {

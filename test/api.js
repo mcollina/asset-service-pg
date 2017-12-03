@@ -1,25 +1,25 @@
 'use strict'
 
-const code = require('code')
-const Lab = require('lab')
-const lab = exports.lab = Lab.script({ output: process.stdout })
+const tap = require('tap')
+const Fastify = require('fastify')
+const { beforeEach, afterEach, test } = tap
 const assetsService = require('../')
 
-lab.experiment('Hello', function () {
-  let server
-  lab.beforeEach((done) => {
-    assetsService({ port: 8989 }, (err, s) => {
-      server = s
-      done(err)
-    })
-  })
+let server
+beforeEach((done) => {
+  server = Fastify()
+  server.register(assetsService)
+  server.ready(done)
+})
 
-  lab.test('Testing for "Hello World"', function (done) {
-    const options = { method: 'GET', url: '/' }
-    server.inject(options, function (response) {
-      const result = response.result
-      code.expect(result).to.equal('Hello World')
-      done()
-    })
+afterEach((done) => {
+  server.close(done)
+})
+
+test('Hello', function (t) {
+  const options = { method: 'GET', url: '/' }
+  server.inject(options, function (response) {
+    t.equal(response.payload, 'Hello World')
+    t.end()
   })
 })
